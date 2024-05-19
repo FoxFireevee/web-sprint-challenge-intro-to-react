@@ -12,6 +12,7 @@ function App() {
   // State
   const [peopleData, setPeopleData] = useState([]);
   const [planetsData, setPlanetsData] = useState([]);
+  const [finalData, setFinalData] = useState([]);
 
   // Fetching API
   useEffect(() => {
@@ -32,16 +33,30 @@ function App() {
     }
     getAPI();
   }, []);
+
+  useEffect(() => {
+    if (peopleData.length > 0 && planetsData.length > 0) {
+      const peopleWithPlanets = peopleData.map(person => {
+        // console.log("person", person);
+        const planet = planetsData.find(planet => person.homeworld === planet.id);
+        // console.log("planet", planet);
+        const planetNames = planet ? planet.name : 'Unknown';
+        return { ...person, homeworld: planetNames };
+      });
+      setFinalData(peopleWithPlanets);
+    }
+  }, [peopleData, planetsData]);
   
+  console.log(finalData)
 
   return (
     <div>
       <h2>Star Wars Characters</h2>
       <p>See the README of the project for instructions on completing this challenge</p>
       {/* ❗ Map over the data in state, rendering a Character at each iteration */
-      peopleData.map((person) => {
+      finalData.map((person) => {
         return (
-            <Character key={person.id} peopleData={person} planetsData={planetsData}/>
+            <Character key={person.id} person={person}/>
         )
       })
       }
